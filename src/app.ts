@@ -2,6 +2,8 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import { apiRouter } from './routes';
 import { healthRouter } from './routes/health.route';
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
 import { notFoundHandler, errorHandler } from './middleware/error.middleware';
 
 export const createApp = (): Application => {
@@ -10,7 +12,12 @@ export const createApp = (): Application => {
   app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
- 
+ app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
+
   app.get('/', (_req: Request, res: Response) => {
     res.json({
       name: 'ilovesurprises-backend',
@@ -25,7 +32,7 @@ export const createApp = (): Application => {
  
   app.use('/health', healthRouter);
   app.use('/api', apiRouter);
- 45
+
   app.use(notFoundHandler);
   app.use(errorHandler);
 
